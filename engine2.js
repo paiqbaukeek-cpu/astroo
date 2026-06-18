@@ -144,6 +144,10 @@ function playWorldMatchday(world){
       const r=simMatch(h,a,false); applyRes(h,r.home,r.away); applyRes(a,r.away,r.home);
       recordMatchStats(world,h,a,r);
       const sum={homeId:hId,awayId:aId,home:r.home,away:r.away,scorers:r.scorers};
+      // attach a rich timeline (cards/VAR) only for the player's match for the live view
+      if((hId===world.myClub||aId===world.myClub) && typeof buildTimeline==='function'){
+        sum.timeline=buildTimeline(h,a,r);
+      }
       dayRes.push(sum);
       if(hId===world.myClub||aId===world.myClub)myMatch=sum;});
     world.results[L.id].push(dayRes); world.leagueDay[L.id]++;
@@ -282,6 +286,7 @@ function endSeason(world){
   LEAGUES.forEach(L=>{const ids=Object.values(world.clubs).filter(c=>c.league===L.id).map(c=>c.id);
     world.leagueFix[L.id]=fixtures(ids);world.leagueDay[L.id]=0;world.results[L.id]=[];});
   world.cont=null; world.market=buildMarket2();
+  world.friendliesUsed=0;
   return {champs, tour, pos, prevSeason: world.history[world.history.length-1]};
 }
 function nextLabel(label){
