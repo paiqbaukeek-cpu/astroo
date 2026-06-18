@@ -20,7 +20,8 @@ function genPlayer(pos, base, nat){
   const p={ id:wuid(), name:nameFor(nat), nat, pos, age:irnd2(17,34), ovr,
     pace:clamp2(ovr+irnd2(-6,6),40,99), shoot:clamp2(ovr+irnd2(-6,6),40,99),
     pass:clamp2(ovr+irnd2(-6,6),40,99), defend:clamp2(ovr+irnd2(-6,6),40,99),
-    stamina:irnd2(60,99), morale:irnd2(60,90), form:0, goals:0, apps:0, value:0 };
+    stamina:irnd2(60,99), morale:irnd2(60,90), form:0,
+    goals:0, assists:0, cleanSheets:0, apps:0, rating:0, ratingSum:0, value:0 };
   p.value=valueOf(p); return p;
 }
 function valueOf(p){
@@ -65,10 +66,20 @@ function simMatch(home, away, neutral){
   const hExp=clamp2((hs.attack+adv-as.defense)/8+1.3,0.2,5);
   const aExp=clamp2((as.attack-hs.defense)/8+1.05,0.2,5);
   const scorers=[];
-  const go=(team,exp)=>{let g=0;for(let m=1;m<=90;m++)if(Math.random()<exp/90){g++;const s=scorer(team);scorers.push({m,team:team.id,name:s?s.name:'?',sid:s?s.id:null});}return g;};
+  const go=(team,exp)=>{let g=0;for(let m=1;m<=90;m++)if(Math.random()<exp/90){g++;
+    const s=scorer(team); const a=assister(team,s);
+    scorers.push({m,team:team.id,name:s?s.name:'?',sid:s?s.id:null,aid:a?a.id:null,aname:a?a.name:null});}return g;};
   const hg=go(home,hExp), ag=go(away,aExp);
   scorers.sort((a,b)=>a.m-b.m);
   return {home:hg,away:ag,scorers};
+}
+// pick an assister (different player, passing-weighted); may be null (solo goal)
+function assister(club, scorerPlayer){
+  if(Math.random()<0.25) return null; // some goals have no assist
+  const xi=startingXI(club).filter(p=>!scorerPlayer||p.id!==scorerPlayer.id);
+  const pool=[]; xi.forEach(p=>{let w=p.pos==='MID'?5:p.pos==='FWD'?3:p.pos==='DEF'?1:0; w+=(p.pass-60)/20;
+    for(let i=0;i<Math.max(0,Math.round(w*2));i++)pool.push(p);});
+  return pool.length?pick2(pool):null;
 }
 function scorer(club){const xi=startingXI(club),pool=[];
   xi.forEach(p=>{let w=p.pos==='FWD'?6:p.pos==='MID'?3:p.pos==='DEF'?1:0; w+=(p.shoot-60)/20;
@@ -122,7 +133,7 @@ function playWorldMatchday(world){
     const dayRes=[];
     round.forEach(([hId,aId])=>{const h=world.clubs[hId],a=world.clubs[aId];
       const r=simMatch(h,a,false); applyRes(h,r.home,r.away); applyRes(a,r.away,r.home);
-      r.scorers.forEach(s=>{const p=findP(world,s.sid);if(p)p.goals++;});
+      recordMatchStats(world,h,a,r);
       const sum={homeId:hId,awayId:aId,home:r.home,away:r.away,scorers:r.scorers};
       dayRes.push(sum);
       if(hId===world.myClub||aId===world.myClub)myMatch=sum;});
@@ -133,6 +144,25 @@ function playWorldMatchday(world){
   return {myMatch, leagueDone: world.leagueDay[myLeague(world)]>=total};
 }
 function findP(world,id){if(!id)return null;for(const c of Object.values(world.clubs)){const p=c.squad.find(x=>x.id===id);if(p)return p;}return null;}
+// Apply goals, assists, apps, clean sheets and a rough match rating to season stats.
+function recordMatchStats(world,home,away,r){
+  r.scorers.forEach(s=>{const sc=findP(world,s.sid);if(sc)sc.goals++; const as=findP(world,s.aid);if(as)as.assists++;});
+  [home,away].forEach((c,idx)=>{
+    const conceded = idx===0?r.away:r.home;
+    startingXI(c).forEach(p=>{
+      p.apps=(p.apps||0)+1;
+      if(p.pos==='GK'&&conceded===0) p.cleanSheets=(p.cleanSheets||0)+1;
+      // simple per-match rating 5.5..9 based on result + own contribution
+      let rt=6.0; const won=(idx===0?r.home>r.away:r.away>r.home); const drew=r.home===r.away;
+      rt+= won?0.8:drew?0.2:-0.4;
+      rt+= r.scorers.filter(x=>x.sid===p.id).length*0.7;
+      rt+= r.scorers.filter(x=>x.aid===p.id).length*0.4;
+      if(p.pos==='GK'&&conceded===0) rt+=0.6;
+      rt=clamp2(+rt.toFixed(1),5.0,10);
+      p.ratingSum=(p.ratingSum||0)+rt; p.rating=+((p.ratingSum)/p.apps).toFixed(2);
+    });
+  });
+}
 function drift(world){Object.values(world.clubs).forEach(c=>c.squad.forEach(p=>{p.form=clamp2(p.form+irnd2(-1,1)*0.5,-3,3);p.morale=clamp2(p.morale+irnd2(-3,3),40,99);}));}
 
 // ===== Continental knockout (UCL) - simple single-elimination from top finishers =====
