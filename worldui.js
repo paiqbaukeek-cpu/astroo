@@ -52,7 +52,7 @@ function tab(name){
   qa('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===name));
   qa('.tabpane').forEach(p=>p.classList.remove('active'));
   q('#tab-'+name).classList.add('active');
-  ({squad:tSquad,tactics:tTactics,training:tTraining,transfer:tTransfer,finance:tFinance,manage:tManage,fixtures:tFixtures,table:tTable,tournaments:tTournaments,stats:tStats,history:tHistory})[name]();
+  ({squad:tSquad,tactics:tTactics,training:tTraining,transfer:tTransfer,finance:tFinance,manage:tManage,fixtures:tFixtures,table:tTable,tournaments:tTournaments,stats:tStats,history:tHistory,coach:tCoach})[name]();
 }
 
 const ORD={GK:0,DEF:1,MID:2,FWD:3};
@@ -324,24 +324,72 @@ function tHistory(){
     if(h.clubWorldCup)Object.entries(h.clubWorldCup).forEach(([k,v])=>box.appendChild(E('div','pill',`${k}: <b>${v}</b>`)));
     if(h.international)Object.entries(h.international).forEach(([k,v])=>box.appendChild(E('div','pill',`🏆 ${k}: <b>${v}</b>`)));
     if(h.awards){const aw=h.awards;
-      if(aw.ballon)box.appendChild(E('div','pill',`🏅 Ballon d'Orr: <b>${aw.ballon.name}</b> (${aw.ballon.club})`));
-      if(aw.goldenBoot)box.appendChild(E('div','pill',`👟 Sepatu Emass: <b>${aw.goldenBoot.name}</b> · ${aw.goldenBoot.goals} gol`));
-      if(aw.goldenGlove)box.appendChild(E('div','pill',`🧤 Sarung Emass: <b>${aw.goldenGlove.name}</b> · ${aw.goldenGlove.cs} CS`));
-      if(aw.youngPlayer)box.appendChild(E('div','pill',`🌟 Pemain Muda Terbaikk: <b>${aw.youngPlayer.name}</b> (${aw.youngPlayer.age})`));
+      if(aw.ballon)box.appendChild(E('div','pill',`🏅 Ballon d'Or: <b>${aw.ballon.name}</b> (${aw.ballon.club})`));
+      if(aw.goldenBoot)box.appendChild(E('div','pill',`👟 Sepatu Emas: <b>${aw.goldenBoot.name}</b> · ${aw.goldenBoot.goals} gol`));
+      if(aw.goldenGlove)box.appendChild(E('div','pill',`🧤 Sarung Emas: <b>${aw.goldenGlove.name}</b> · ${aw.goldenGlove.cs} CS`));
+      if(aw.youngPlayer)box.appendChild(E('div','pill',`🌟 Pemain Muda Terbaik: <b>${aw.youngPlayer.name}</b> (${aw.youngPlayer.age})`));
     }
     pane.appendChild(box);
   });
+}
+
+// ---------- Profil Pelatih ----------
+function tCoach(){
+  const pane=q('#tab-coach');pane.innerHTML='';
+  const cc=(typeof ensureCoach==='function')?ensureCoach(W):null;
+  if(!cc){pane.appendChild(E('p','muted','Profil pelatih belum tersedia.'));return;}
+  const c=myC();
+  const box=E('div','panel','<h3>👤 Profil Pelatih</h3>');
+  box.appendChild(E('div','row',
+    `<span class="pill">Nama: <b>${cc.name}</b></span>`+
+    `<span class="pill">Klub: <b>${c.name}</b></span>`+
+    `<span class="pill">Mulai: <b>${cc.startedSeason}</b></span>`));
+  pane.appendChild(box);
+
+  const rec=E('div','panel','<h3>📊 Statistik Karir</h3>');
+  const tot=cc.W+cc.D+cc.L;
+  rec.appendChild(E('div','row',
+    `<span class="pill">Main: <b>${tot}</b></span>`+
+    `<span class="pill tag-win">Menang: <b>${cc.W}</b></span>`+
+    `<span class="pill">Seri: <b>${cc.D}</b></span>`+
+    `<span class="pill tag-loss">Kalah: <b>${cc.L}</b></span>`+
+    `<span class="pill">Win%: <b>${coachWinPct(cc)}%</b></span>`+
+    `<span class="pill">🏆 Trofi: <b>${cc.trophies}</b></span>`));
+  pane.appendChild(rec);
+
+  const cl=E('div','panel','<h3>💼 Histori Klub</h3>');
+  if(!cc.clubs.length){cl.appendChild(E('p','muted','Belum ada histori.'));}
+  cc.clubs.slice().reverse().forEach(x=>{
+    const periode = x.leftSeason? `${x.joinedSeason} → ${x.leftSeason}` : `${x.joinedSeason} → sekarang`;
+    cl.appendChild(E('div','pill',`<b>${x.club}</b> · ${periode} · 🏆 ${x.trophies||0}`));
+  });
+  pane.appendChild(cl);
+
+  if(cc.titles.length){
+    const tl=E('div','panel','<h3>🏆 Daftar Trofi</h3>');
+    cc.titles.slice().reverse().forEach(t=>tl.appendChild(E('div','pill',`${t.season} · <b>${t.title}</b> (${t.club})`)));
+    pane.appendChild(tl);
+  }
 }
 
 // ---------- Match ----------
 function playWeek(){
   const c=myC(),lid=c.league;
   if(W.leagueDay[lid]>=W.leagueFix[lid].length){
+    const myName=c.name;
     const sum=endSeason(W);
+    if(typeof coachScanLastSeason==='function') coachScanLastSeason(W, myName);
     toastW(`Musim selesai! Kamu finis peringkat ${sum.pos}. Cek tab Turnamen & Sejarah. Musim ${W.seasonLabel} dimulai.`);
     refresh();return;
   }
   const out=playWorldMatchday(W);
+  // Catat hasil laga pelatih untuk statistik karir.
+  if(out.myMatch && typeof coachRecordResult==='function'){
+    const m=out.myMatch;
+    const meHome=m.homeId===W.myClub;
+    const gf=meHome?m.home:m.away, ga=meHome?m.away:m.home;
+    coachRecordResult(W, gf, ga);
+  }
   if(out.myMatch) matchModal(out.myMatch); else { refresh(); }
 }
 function matchModal(m){
@@ -380,9 +428,11 @@ window.addEventListener('DOMContentLoaded',()=>{
     const label=q('#w-season').value.trim()||'25/26';
     const tmp=newWorld(name,null,label);
     const target=Object.values(tmp.clubs).find(c=>c.league===wSelLeague&&c.name===wSelClub);
-    tmp.myClub=target.id;W=tmp;enter();
+    tmp.myClub=target.id;W=tmp;
+    if(typeof ensureCoach==='function'){W.coach=null;ensureCoach(W);}
+    enter();
   };
-  q('#w-load').onclick=()=>{const s=loadWorld();if(s){W=s;enter();}else toastW('Tidak ada simpanan.');};
+  q('#w-load').onclick=()=>{const s=loadWorld();if(s){W=s;if(typeof ensureCoach==='function')ensureCoach(W);enter();}else toastW('Tidak ada simpanan.');};
   qa('.tab').forEach(t=>t.onclick=()=>tab(t.dataset.tab));
   q('#w-play').onclick=playWeek;
   q('#w-save').onclick=()=>{saveWorld(W);toastW('Permainan disimpan.');};
