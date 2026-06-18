@@ -21,8 +21,15 @@ function genPlayer(pos, base, nat){
     pace:clamp2(ovr+irnd2(-6,6),40,99), shoot:clamp2(ovr+irnd2(-6,6),40,99),
     pass:clamp2(ovr+irnd2(-6,6),40,99), defend:clamp2(ovr+irnd2(-6,6),40,99),
     stamina:irnd2(60,99), morale:irnd2(60,90), form:0,
-    goals:0, assists:0, cleanSheets:0, apps:0, rating:0, ratingSum:0, value:0 };
-  p.value=valueOf(p); return p;
+    goals:0, assists:0, cleanSheets:0, apps:0, rating:0, ratingSum:0, value:0,
+    wage:0, contract:irnd2(1,4) };
+  p.value=valueOf(p); p.wage=wageOf(p); return p;
+}
+// Weekly-ish wage in millions/season derived from ovr & age.
+function wageOf(p){
+  const base=Math.pow(Math.max(1,p.ovr-45),1.7)/40;
+  const prime=p.age>=23&&p.age<=30?1.15:1;
+  return Math.max(0.1,+(base*prime).toFixed(1));
 }
 function valueOf(p){
   const af=p.age<=26?1+(26-p.age)*0.03:1-(p.age-26)*0.06;
@@ -106,7 +113,9 @@ function newWorld(managerName, clubId, seasonLabel){
   LEAGUES.forEach(L=>L.clubs.forEach(def=>{
     const id=wuid();
     clubs[id]={id,name:def.name,rating:def.rating,league:L.id,country:L.country,
-      budget:+(def.rating-55).toFixed(1), squad:genSquad(def.rating,L.country),
+      budget:+((def.rating-55)*1.5).toFixed(1), squad:genSquad(def.rating,L.country),
+      stadium:{name:def.name+' Arena', capacity:irnd2(15000,60000), level:1},
+      sponsor:null,
       P:0,W:0,D:0,L:0,GF:0,GA:0,Pts:0};
   }));
   const myClub = clubId || Object.values(clubs).find(c=>c.league==='idn1').id;
