@@ -497,13 +497,45 @@ function matchModal(m){
   const h=W.clubs[m.homeId],a=W.clubs[m.awayId];
   q('#match-title').textContent=`${h.name} vs ${a.name}`;
   const sc=q('#match-score'),log=q('#match-log'),close=q('#match-close');
-  sc.textContent='0 - 0';log.innerHTML='';close.classList.add('hidden');
+  const extra=q('#match-extra'),subBtn=q('#match-sub');
+  sc.textContent='0 - 0';log.innerHTML='';extra.innerHTML='';close.classList.add('hidden');
+  // Match view object untuk melacak pergantian pemain.
+  const matchView={homeId:m.homeId,awayId:m.awayId,subs:[]};
+  // Tombol pergantian hanya untuk laga klub pelatih & saat laga berjalan.
+  const meIsPlaying = (m.homeId===W.myClub||m.awayId===W.myClub);
+  if(subBtn){
+    if(meIsPlaying){
+      subBtn.classList.remove('hidden');
+      subBtn.onclick=()=>{
+        const myClubObj=W.clubs[W.myClub];
+        extra.innerHTML='';
+        if(typeof renderSubPanel==='function') extra.appendChild(renderSubPanel(W,matchView,myClubObj,()=>matchModal._refreshSub()));
+      };
+    } else subBtn.classList.add('hidden');
+  }
+  matchModal._refreshSub=()=>{
+    if(!subBtn||subBtn.classList.contains('hidden')) return;
+    const myClubObj=W.clubs[W.myClub];
+    extra.innerHTML='';
+    if(typeof renderSubPanel==='function') extra.appendChild(renderSubPanel(W,matchView,myClubObj,()=>matchModal._refreshSub()));
+  };
   // Use full timeline if present (goals + cards + VAR), else fall back to scorers.
   const ev=(m.timeline && m.timeline.length)? m.timeline.slice()
     : m.scorers.map(s=>({m:s.m,type:'goal',team:s.team,text:`⚽ ${s.m}' GOL! ${s.name}`}));
   let hg=0,ag=0,i=0;
   const timer=setInterval(()=>{
-    if(i>=ev.length){clearInterval(timer);log.appendChild(E('div',null,`<b>Peluit panjang!</b> ${m.home} - ${m.away}`));close.classList.remove('hidden');log.scrollTop=log.scrollHeight;return;}
+    if(i>=ev.length){
+      clearInterval(timer);
+      log.appendChild(E('div',null,`<b>Peluit panjang!</b> ${m.home} - ${m.away}`));
+      if(subBtn) subBtn.classList.add('hidden');
+      extra.innerHTML='';
+      // Adu penalti visual bila skor akhir seri (laga gugur / friendly).
+      if(m.home===m.away && typeof shootout==='function'){
+        const so=shootout(h,a);
+        extra.appendChild(renderShootout(so,h,a));
+      }
+      close.classList.remove('hidden');log.scrollTop=log.scrollHeight;return;
+    }
     const e=ev[i++];
     const mine=e.team===W.myClub;
     if(e.var) log.appendChild(E('div','muted',e.var));
