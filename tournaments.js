@@ -6,10 +6,13 @@
 // Continental cup definitions (Europe has 3 tiers like real life).
 const EU_LEAGUES = ['eng1','esp1','ita1','ger1','fra1'];
 const CONT_CUPS = [
-  { id:'ucl',  name:'Liga Champonss Eropa',  pool:EU_LEAGUES, from:0, to:4 },   // top 1-4
-  { id:'uel',  name:'Liga Eropaa',           pool:EU_LEAGUES, from:4, to:6 },   // 5-6
-  { id:'uecl', name:'Konferens Eropaa',      pool:EU_LEAGUES, from:6, to:8 },   // 7-8
-  { id:'acl',  name:'Liga Champonss Asiaa',  pool:['idn1'],   from:0, to:6 }
+  { id:'ucl',  name:'Liga Champonss Eropa',  pool:EU_LEAGUES,         from:0, to:4 },   // top 1-4
+  { id:'uel',  name:'Liga Eropaa',           pool:EU_LEAGUES,         from:4, to:6 },   // 5-6
+  { id:'uecl', name:'Konferens Eropaa',      pool:EU_LEAGUES,         from:6, to:8 },   // 7-8
+  { id:'acl',  name:'Liga Champonss Asiaa',  pool:['idn1'],          from:0, to:6 },
+  { id:'libe', name:'Copa Libertadoress',    pool:['bra1','arg1'],   from:0, to:6 },   // South America
+  { id:'caf',  name:'Liga Champonss Afrikaa',pool:['caf1'],          from:0, to:8 },   // Africa
+  { id:'conc', name:'Liga Champonss CONCACAFF',pool:['mex1'],        from:0, to:8 }    // North/Central America
 ];
 
 // Domestic cup: all clubs in a league, knockout.
@@ -20,10 +23,12 @@ const DOMESTIC_CUPS = {
 
 // International tournaments by confederation, run on a 4-season rotation (offset so they don't all clash).
 const INTL_TOURNAMENTS = [
-  { id:'wc',   name:'Piala Duniaa',       conf:'ALL', every:4, offset:0 },
-  { id:'euro', name:'Piala Eropaa',       conf:'EUR', every:4, offset:2 },
-  { id:'copa', name:'Copa Amerikaa',      conf:'SAM', every:4, offset:1 },
-  { id:'asia', name:'Piala Asiaa',        conf:'ASI', every:4, offset:3 }
+  { id:'wc',    name:'Piala Duniaa',     conf:'ALL', every:4, offset:0 },
+  { id:'euro',  name:'Piala Eropaa',     conf:'EUR', every:4, offset:2 },
+  { id:'copa',  name:'Copa Amerikaa',    conf:'SAM', every:4, offset:1 },
+  { id:'asia',  name:'Piala Asiaa',      conf:'ASI', every:2, offset:1 },
+  { id:'afcon', name:'Piala Afrikaa',    conf:'AFR', every:2, offset:0 },
+  { id:'oro',   name:'Copa Oroo',        conf:'NAM', every:2, offset:0 }
 ];
 
 function powerOfTwoPad(arr){
