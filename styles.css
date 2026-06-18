@@ -81,5 +81,9 @@ tr.starter td:first-child{border-left:3px solid var(--accent)}
 .chip:hover{border-color:var(--muted)}
 .chip.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
 .bench{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.pen-grid{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.pen-dot{font-size:12px;padding:3px 8px;border-radius:8px;border:1px solid var(--line)}
+.pen-dot.in{background:rgba(46,160,67,.18);border-color:var(--accent)}
+.pen-dot.miss{background:rgba(218,54,51,.18);border-color:var(--danger)}
 .pcard.sel{outline:3px solid var(--gold);outline-offset:1px;transform:translateY(-3px)}
 .pcard{transition:transform .12s}
