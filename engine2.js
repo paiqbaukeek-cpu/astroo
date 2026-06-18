@@ -53,11 +53,16 @@ function clubStrength(club){
   xi.forEach(p=>{const e=p.ovr+p.form*1.5;
     if(p.pos==='FWD')att+=e; else if(p.pos==='MID'){mid+=e;att+=e*0.3;def+=e*0.3;}
     else if(p.pos==='DEF')def+=e; else gk+=e*1.1;});
-  return { attack:(att+mid*0.4)/4, defense:(def+gk+mid*0.3)/4,
+  // Mentalitas memengaruhi keseimbangan serangan/pertahanan (0=Bertahan,1=Seimbang,2=Menyerang).
+  const ment = (club.mentality==null?1:club.mentality);
+  const attBonus=[0.92,1,1.1][ment], defBonus=[1.1,1,0.9][ment];
+  return { attack:((att+mid*0.4)/4)*attBonus, defense:((def+gk+mid*0.3)/4)*defBonus,
     overall: xi.reduce((s,p)=>s+p.ovr,0)/Math.max(1,xi.length) };
 }
 function startingXI(club){
-  const f={GK:1,DEF:4,MID:4,FWD:2};
+  // Hormati formasi pilihan klub; fallback ke 4-4-2 untuk save lama.
+  const FALLBACK={GK:1,DEF:4,MID:4,FWD:2};
+  const f=(typeof FORMATIONS!=='undefined' && FORMATIONS[club.formation]) || FALLBACK;
   const xi=[]; POS.forEach(pos=>{
     const list=club.squad.filter(p=>p.pos===pos).sort((a,b)=>b.ovr-a.ovr);
     for(let i=0;i<f[pos];i++) if(list[i]) xi.push(list[i]);
