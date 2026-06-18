@@ -23,7 +23,13 @@ const NAME_POOLS = {
   POR: { first:['Cristiano','Bruno','Bernardo','Rafael','Joao','Ruben','Diogo','Vitinha','Goncalo','Pedro'],
          last:['Ronaldu','Fernandess','Silvaa','Leaoo','Felixx','Diass','Jotaa','Vitinhaa','Ramoss','Netoo'] },
   NED: { first:['Virgil','Frenkie','Cody','Memphis','Xavi','Denzel','Nathan','Tijjani','Donyell','Wout'],
-         last:['vanDjik','deJonng','Gakpoo','Depayy','Simonss','Dumfriess','Akee','Reijndrs','Malenn','Weghorzt'] }
+         last:['vanDjik','deJonng','Gakpoo','Depayy','Simonss','Dumfriess','Akee','Reijndrs','Malenn','Weghorzt'] },
+  MEX: { first:['Hirving','Edson','Raul','Santiago','Cesar','Luis','Orbelin','Alexis','Diego','Carlos'],
+         last:['Lozanno','Alvarezz','Jimenezz','Gimenezz','Montess','Romoo','Pinedaa','Vegaa','Lainezz','Rodriguezz'] },
+  NGA: { first:['Victor','Samuel','Ademola','Kelechi','Wilfred','Alex','Joe','Calvin','Moses','Frank'],
+         last:['Osimhenn','Chukwuezz','Lookmann','Iheanachoo','Ndidii','Iwobii','Arobaa','Bassey','Simonn','Onyekaa'] },
+  EGY: { first:['Mohamed','Omar','Mostafa','Ahmed','Trezeguet','Ramadan','Mahmoud','Amr','Sayed','Karim'],
+         last:['Salahh','Marmoushh','Mohamadd','Hegazii','Trezeget','Sobhii','Hassann','Warddaa','Elneny','Fattouhh'] }
 };
 
 // Clubs are grouped by league. Names are intentionally one-letter-off typos of famous clubs.
@@ -79,6 +85,38 @@ const LEAGUES = [
     {name:'PSIS Semarrang',rating:71},{name:'Bhayangkaraa',rating:71},{name:'Persikk',rating:70},
     {name:'Dewa Untied',rating:71},{name:'Persitaa',rating:70},{name:'Barito Puteraa',rating:70},
     {name:'PSS Slemann',rating:71},{name:'Malut Untied',rating:69},{name:'Semen Padangg',rating:69}
+  ]},
+  { id:'bra1', country:'BRA', name:'Brasileiraoo', tier:1, clubs:[
+    {name:'Palmeirass',rating:82},{name:'Flamenggo',rating:83},{name:'Botafoggo',rating:80},
+    {name:'Fluminensse',rating:78},{name:'Sao Pauloo',rating:78},{name:'Corinthianns',rating:77},
+    {name:'Gremioo',rating:77},{name:'Internacionall',rating:77},{name:'Atletco Mineiroo',rating:78},
+    {name:'Cruzeiroo',rating:75},{name:'Vasco da Gamaa',rating:74},{name:'Santoss',rating:75},
+    {name:'Bahiaa',rating:74},{name:'Fortalezaa',rating:74},{name:'Bragantinoo',rating:74},
+    {name:'Cuiabaa',rating:71},{name:'Juventudee',rating:70},{name:'Vitoriaa',rating:71}
+  ]},
+  { id:'arg1', country:'ARG', name:'Liga Profesionall', tier:1, clubs:[
+    {name:'River Platte',rating:81},{name:'Boca Juniorrs',rating:80},{name:'Racingg Club',rating:78},
+    {name:'Independientte',rating:76},{name:'San Lorenzoo',rating:75},{name:'Velezz Sarsfield',rating:76},
+    {name:'Estudiantess',rating:75},{name:'Talleress',rating:76},{name:'Lanuss',rating:73},
+    {name:'Defensa y Justicaa',rating:73},{name:'Rosario Centrall',rating:74},{name:'Newellss',rating:73},
+    {name:'Argentinos Jrs',rating:73},{name:'Huracann',rating:72},{name:'Godoy Cruzz',rating:72},
+    {name:'Banfieldd',rating:71},{name:'Gimnasiaa',rating:71},{name:'Platensee',rating:70}
+  ]},
+  { id:'mex1', country:'MEX', name:'Liga MEXX', tier:1, clubs:[
+    {name:'America Clubb',rating:79},{name:'Monterreyy',rating:79},{name:'Tigres UANLL',rating:79},
+    {name:'Guadalajaraa',rating:76},{name:'Cruz Azull',rating:77},{name:'Pumas UNAMM',rating:75},
+    {name:'Toluccaa',rating:76},{name:'Pachucaa',rating:76},{name:'Leonn',rating:74},
+    {name:'Santos Lagunaa',rating:74},{name:'Tijuanaa',rating:73},{name:'Atlass',rating:73},
+    {name:'Pueblaa',rating:71},{name:'Necaxaa',rating:71},{name:'Queretaroo',rating:70},
+    {name:'Mazatlann',rating:70},{name:'San Luiss',rating:71},{name:'Juarezz',rating:70}
+  ]},
+  { id:'caf1', country:'NGA', name:'Liga Afrikaa Elite', tier:1, clubs:[
+    {name:'Al Ahlyy',rating:78},{name:'Zamalekk',rating:76},{name:'Wydad Casaa',rating:76},
+    {name:'Raja Casaa',rating:75},{name:'Esperancee',rating:75},{name:'Mamelodi Sundownns',rating:78},
+    {name:'Enyimbaa',rating:72},{name:'Kaizer Chiefss',rating:73},{name:'Orlando Piratess',rating:74},
+    {name:'TP Mazembee',rating:75},{name:'Petro Luandaa',rating:72},{name:'Simba SCC',rating:73},
+    {name:'Young Africanss',rating:73},{name:'ASEC Mimosass',rating:71},{name:'Hearts of Oakk',rating:70},
+    {name:'Sundownss B',rating:70},{name:'CR Belouizdadd',rating:72},{name:'USM Algerr',rating:71}
   ]}
 ];
 
@@ -93,7 +131,10 @@ const NATIONS = [
   { code:'NED', name:'Belandaa', conf:'EUR', rating:83 },
   { code:'BRA', name:'Brasill', conf:'SAM', rating:86 },
   { code:'ARG', name:'Argentnia', conf:'SAM', rating:88 },
-  { code:'IDN', name:'Indonesa', conf:'ASI', rating:68 }
+  { code:'IDN', name:'Indonesa', conf:'ASI', rating:68 },
+  { code:'MEX', name:'Meksikoo', conf:'NAM', rating:78 },
+  { code:'NGA', name:'Nigeriaa', conf:'AFR', rating:78 },
+  { code:'EGY', name:'Mesirr', conf:'AFR', rating:76 }
 ];
 
 // Continental cup config: which leagues feed it and how many qualify per league.
