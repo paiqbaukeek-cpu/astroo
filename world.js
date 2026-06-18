@@ -134,7 +134,19 @@ const NATIONS = [
   { code:'IDN', name:'Indonesa', conf:'ASI', rating:68 },
   { code:'MEX', name:'Meksikoo', conf:'NAM', rating:78 },
   { code:'NGA', name:'Nigeriaa', conf:'AFR', rating:78 },
-  { code:'EGY', name:'Mesirr', conf:'AFR', rating:76 }
+  { code:'EGY', name:'Mesirr', conf:'AFR', rating:76 },
+  // filler nations so each confederation tournament has enough teams
+  { code:'USA', name:'Amerikaa', conf:'NAM', rating:75 },
+  { code:'CAN', name:'Kanadaa', conf:'NAM', rating:73 },
+  { code:'CRC', name:'Kosta Rikaa', conf:'NAM', rating:71 },
+  { code:'MAR', name:'Marokoo', conf:'AFR', rating:80 },
+  { code:'SEN', name:'Senegall', conf:'AFR', rating:79 },
+  { code:'URU', name:'Uruguaii', conf:'SAM', rating:82 },
+  { code:'COL', name:'Kolombiaa', conf:'SAM', rating:81 },
+  { code:'JPN', name:'Jepanng', conf:'ASI', rating:79 },
+  { code:'KOR', name:'Korea Selatann', conf:'ASI', rating:78 },
+  { code:'BEL', name:'Belgiaa', conf:'EUR', rating:84 },
+  { code:'CRO', name:'Kroasiaa', conf:'EUR', rating:82 }
 ];
 
 // Continental cup config: which leagues feed it and how many qualify per league.
