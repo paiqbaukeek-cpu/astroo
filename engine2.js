@@ -236,7 +236,7 @@ function endSeason(world){
   LEAGUES.forEach(L=>{const ids=Object.values(world.clubs).filter(c=>c.league===L.id).map(c=>c.id);
     world.leagueFix[L.id]=fixtures(ids);world.leagueDay[L.id]=0;world.results[L.id]=[];});
   world.cont=null; world.market=buildMarket2();
-  return {champs, contWinner, wc, pos};
+  return {champs, tour, pos, prevSeason: world.history[world.history.length-1]};
 }
 function nextLabel(label){
   const m=/^(\d{2})\/(\d{2})$/.exec(label); if(!m) return label;
