@@ -289,6 +289,8 @@ function endSeason(world){
     world.leagueFix[L.id]=fixtures(ids);world.leagueDay[L.id]=0;world.results[L.id]=[];});
   world.cont=null; world.market=buildMarket2();
   world.friendliesUsed=0;
+  // Kembangkan akademi muda tiap musim (menua, mendekati potensi, promosi AI).
+  if(typeof developAcademies==='function') developAcademies(world);
   return {champs, tour, pos, prevSeason: world.history[world.history.length-1]};
 }
 function nextLabel(label){

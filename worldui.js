@@ -211,6 +211,22 @@ function tManage(){
   });
   rt.appendChild(rtb);ret.appendChild(rt);pane.appendChild(ret);
 
+  // Akademi muda
+  if(typeof academyList==='function'){
+    const ac=E('div','panel','<h3>🧑‍🎓 Akademi Muda</h3>');
+    ac.appendChild(E('p','muted','Prospek muda berkembang tiap musim menuju potensinya. Promosikan ke skuad utama bila siap.'));
+    const at=E('table');
+    at.innerHTML='<thead><tr><th>Pos</th><th>Nama</th><th>Umur</th><th>OVR</th><th>Potensi</th><th></th></tr></thead>';
+    const atb=E('tbody');
+    academyList(W).forEach(p=>{
+      const tr=E('tr',null,`<td>${posTag(p.pos)}</td><td>${p.name}</td><td>${p.age}</td><td><b>${p.ovr}</b></td><td><b>${p.potential||p.ovr}</b></td>`);
+      const cell=E('td');const b=E('button','btn small primary','Promosikan');
+      b.onclick=()=>{const r=promoteYouth(W,p.id);toastW(r.msg);tManage();hud();};
+      cell.appendChild(b);tr.appendChild(cell);atb.appendChild(tr);
+    });
+    at.appendChild(atb);ac.appendChild(at);pane.appendChild(ac);
+  }
+
   // Job offers
   const job=E('div','panel','<h3>💼 Tawaran Melatih Klub Lain</h3>');
   const jo=jobOffers(W);
@@ -370,6 +386,16 @@ function tCoach(){
     cc.titles.slice().reverse().forEach(t=>tl.appendChild(E('div','pill',`${t.season} · <b>${t.title}</b> (${t.club})`)));
     pane.appendChild(tl);
   }
+
+  // Legenda klub yang dipensiunkan pelatih.
+  const legends=[];
+  cc.clubs.forEach(x=>(x.legends||[]).forEach(l=>legends.push({club:x.club,...l})));
+  if(legends.length){
+    const lg=E('div','panel','<h3>🌟 Legenda Klub</h3>');
+    legends.slice().reverse().forEach(l=>lg.appendChild(E('div','pill',
+      `<b>${l.name}</b> ${posTag(l.pos)} · ${l.club} · OVR ${l.ovr} · ${l.goals} gol / ${l.apps} main`)));
+    pane.appendChild(lg);
+  }
 }
 
 // ---------- Match ----------
@@ -430,9 +456,10 @@ window.addEventListener('DOMContentLoaded',()=>{
     const target=Object.values(tmp.clubs).find(c=>c.league===wSelLeague&&c.name===wSelClub);
     tmp.myClub=target.id;W=tmp;
     if(typeof ensureCoach==='function'){W.coach=null;ensureCoach(W);}
+    if(typeof ensureAcademy==='function')ensureAcademy(W);
     enter();
   };
-  q('#w-load').onclick=()=>{const s=loadWorld();if(s){W=s;if(typeof ensureCoach==='function')ensureCoach(W);enter();}else toastW('Tidak ada simpanan.');};
+  q('#w-load').onclick=()=>{const s=loadWorld();if(s){W=s;if(typeof ensureCoach==='function')ensureCoach(W);if(typeof ensureAcademy==='function')ensureAcademy(W);enter();}else toastW('Tidak ada simpanan.');};
   qa('.tab').forEach(t=>t.onclick=()=>tab(t.dataset.tab));
   q('#w-play').onclick=playWeek;
   q('#w-save').onclick=()=>{saveWorld(W);toastW('Permainan disimpan.');};
