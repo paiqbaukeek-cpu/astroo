@@ -52,7 +52,7 @@ function tab(name){
   qa('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===name));
   qa('.tabpane').forEach(p=>p.classList.remove('active'));
   q('#tab-'+name).classList.add('active');
-  ({squad:tSquad,tactics:tTactics,training:tTraining,transfer:tTransfer,fixtures:tFixtures,table:tTable,tournaments:tTournaments,history:tHistory})[name]();
+  ({squad:tSquad,tactics:tTactics,training:tTraining,transfer:tTransfer,fixtures:tFixtures,table:tTable,tournaments:tTournaments,stats:tStats,history:tHistory})[name]();
 }
 
 const ORD={GK:0,DEF:1,MID:2,FWD:3};
@@ -170,6 +170,35 @@ function tTournaments(){
   sec('Piala Super', Object.values(tr.superCups).map(c=>`${c.name}: <b>${c.winner}</b>`));
   if(tr.clubWorldCup) sec('Antarklub Dunia', [`${tr.clubWorldCup.name}: <b>${tr.clubWorldCup.winner}</b>`]);
   if(tr.intl.length) sec('Antarnegara', tr.intl.map(t=>`${t.name}: <b>${t.winner}</b>`));
+}
+
+// ---------- Statistik ----------
+function tStats(){
+  const pane=q('#tab-stats');pane.innerHTML='';
+  const sel=E('select');
+  const optAll=E('option',null,'Semua Liga (Dunia)');optAll.value='';sel.appendChild(optAll);
+  LEAGUES.forEach(L=>{const o=E('option',null,L.name);o.value=L.id;if(L.id===tStats._sel)o.selected=true;sel.appendChild(o);});
+  sel.value=tStats._sel||'';
+  sel.onchange=()=>{tStats._sel=sel.value;tStats();};
+  pane.appendChild(sel);
+  const lid=tStats._sel||null;
+  const grid=E('div','grid2');
+  grid.appendChild(statTable('⚽ Top Skor', topScorers(W,lid,12), x=>x.p.goals, 'Gol'));
+  grid.appendChild(statTable('🎯 Top Assist', topAssists(W,lid,12), x=>x.p.assists||0, 'Assist'));
+  pane.appendChild(grid);
+  const grid2=E('div','grid2');
+  grid2.appendChild(statTable('⭐ Rating Tertinggi', topRated(W,lid,12), x=>x.p.rating||0, 'Rating'));
+  grid2.appendChild(statTable('🧤 Clean Sheet (GK)', topRated(W,lid,30).filter(x=>x.p.pos==='GK').slice(0,12), x=>x.p.cleanSheets||0, 'CS'));
+  pane.appendChild(grid2);
+}
+function statTable(title, list, valFn, valLabel){
+  const box=E('div','panel',`<h3>${title}</h3>`);
+  if(!list.length){box.appendChild(E('p','muted','Belum ada data. Mainkan beberapa pekan.'));return box;}
+  const t=E('table');
+  t.innerHTML=`<thead><tr><th>#</th><th>Pemain</th><th>Klub</th><th>${valLabel}</th></tr></thead>`;
+  const tb=E('tbody');
+  list.forEach((x,i)=>tb.appendChild(E('tr',x.club.id===W.myClub?'me':'',`<td>${i+1}</td><td>${x.p.name}</td><td>${x.club.name}</td><td><b>${valFn(x)}</b></td>`)));
+  t.appendChild(tb);box.appendChild(t);return box;
 }
 
 // ---------- History / Palmares ----------
