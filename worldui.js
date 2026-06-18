@@ -290,12 +290,19 @@ function matchModal(m){
   q('#match-title').textContent=`${h.name} vs ${a.name}`;
   const sc=q('#match-score'),log=q('#match-log'),close=q('#match-close');
   sc.textContent='0 - 0';log.innerHTML='';close.classList.add('hidden');
-  let hg=0,ag=0,i=0;const ev=m.scorers.slice();
+  // Use full timeline if present (goals + cards + VAR), else fall back to scorers.
+  const ev=(m.timeline && m.timeline.length)? m.timeline.slice()
+    : m.scorers.map(s=>({m:s.m,type:'goal',team:s.team,text:`⚽ ${s.m}' GOL! ${s.name}`}));
+  let hg=0,ag=0,i=0;
   const timer=setInterval(()=>{
     if(i>=ev.length){clearInterval(timer);log.appendChild(E('div',null,`<b>Peluit panjang!</b> ${m.home} - ${m.away}`));close.classList.remove('hidden');log.scrollTop=log.scrollHeight;return;}
-    const e=ev[i++];if(e.team===m.homeId)hg++;else ag++;sc.textContent=`${hg} - ${ag}`;
+    const e=ev[i++];
     const mine=e.team===W.myClub;
-    log.appendChild(E('div',mine?'goal me':'goal',`⚽ ${e.m}' GOL! ${e.name}`));log.scrollTop=log.scrollHeight;
+    if(e.var) log.appendChild(E('div','muted',e.var));
+    if(e.type==='goal' && !e.disallowed){ if(e.team===m.homeId)hg++; else ag++; sc.textContent=`${hg} - ${ag}`; }
+    let cls = e.type==='goal'? (e.disallowed?'muted':(mine?'goal me':'goal')) : 'muted';
+    let txt = e.disallowed? `❌ ${e.m}' Gol dianulir VAR (${e.text.replace(/^⚽ \d+' GOL! /,'')})` : e.text;
+    log.appendChild(E('div',cls,txt));log.scrollTop=log.scrollHeight;
   },320);
   close.onclick=()=>{modal.classList.add('hidden');refresh();};
 }
