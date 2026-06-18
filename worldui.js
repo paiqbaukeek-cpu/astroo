@@ -52,7 +52,7 @@ function tab(name){
   qa('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===name));
   qa('.tabpane').forEach(p=>p.classList.remove('active'));
   q('#tab-'+name).classList.add('active');
-  ({squad:tSquad,tactics:tTactics,training:tTraining,transfer:tTransfer,finance:tFinance,fixtures:tFixtures,table:tTable,tournaments:tTournaments,stats:tStats,history:tHistory})[name]();
+  ({squad:tSquad,tactics:tTactics,training:tTraining,transfer:tTransfer,finance:tFinance,manage:tManage,fixtures:tFixtures,table:tTable,tournaments:tTournaments,stats:tStats,history:tHistory})[name]();
 }
 
 const ORD={GK:0,DEF:1,MID:2,FWD:3};
@@ -178,6 +178,53 @@ function tFinance(){
     cell.appendChild(b);tr.appendChild(cell);tb.appendChild(tr);
   });
   t.appendChild(tb);cn.appendChild(t);pane.appendChild(cn);
+}
+
+// ---------- Manajemen ----------
+function tManage(){
+  const c=myC(),pane=q('#tab-manage');pane.innerHTML='';
+
+  // Loan market
+  const loan=E('div','panel','<h3>🔄 Pinjam Pemain (1 musim)</h3>');
+  loan.appendChild(E('p','muted','Pemain pinjaman kembali ke klub asal di akhir musim.'));
+  const lt=E('table');
+  lt.innerHTML='<thead><tr><th>Pos</th><th>Nama</th><th>OVR</th><th>Klub Asal</th><th>Biaya</th><th></th></tr></thead>';
+  const ltb=E('tbody');
+  loanList(W).forEach(x=>{
+    const tr=E('tr',null,`<td>${posTag(x.p.pos)}</td><td>${x.p.name}</td><td><b>${x.p.ovr}</b></td><td>${x.club.name}</td><td>${M(x.fee)}</td>`);
+    const cell=E('td');const b=E('button','btn small primary','Pinjam');b.disabled=c.budget<x.fee;
+    b.onclick=()=>{const r=loanIn(W,x.club.id,x.p.id);toastW(r.msg);tManage();hud();};
+    cell.appendChild(b);tr.appendChild(cell);ltb.appendChild(tr);
+  });
+  lt.appendChild(ltb);loan.appendChild(lt);pane.appendChild(loan);
+
+  // Retire
+  const ret=E('div','panel','<h3>👋 Pensiunkan Pemain</h3>');
+  const rt=E('table');
+  rt.innerHTML='<thead><tr><th>Nama</th><th>Pos</th><th>Umur</th><th>OVR</th><th></th></tr></thead>';
+  const rtb=E('tbody');
+  c.squad.slice().sort((a,b)=>b.age-a.age).forEach(p=>{
+    const tr=E('tr',null,`<td>${p.name}</td><td>${posTag(p.pos)}</td><td>${p.age}</td><td>${p.ovr}</td>`);
+    const cell=E('td');const b=E('button','btn small danger','Pensiun');
+    b.onclick=()=>{if(confirm(`Pensiunkan ${p.name}?`)){const r=retirePlayer(W,p.id);toastW(r.msg);tManage();hud();}};
+    cell.appendChild(b);tr.appendChild(cell);rtb.appendChild(tr);
+  });
+  rt.appendChild(rtb);ret.appendChild(rt);pane.appendChild(ret);
+
+  // Job offers
+  const job=E('div','panel','<h3>💼 Tawaran Melatih Klub Lain</h3>');
+  const jo=jobOffers(W);
+  const perfTxt={great:'Sangat baik',ok:'Cukup',poor:'Kurang'}[jo.performance];
+  job.appendChild(E('p','muted',`Performa kamu: <b>${perfTxt}</b> (peringkat ${jo.pos}). Tawaran tergantung performa.`));
+  if(!jo.offers.length){ job.appendChild(E('p','muted','Belum ada tawaran. Tingkatkan performa.')); }
+  jo.offers.forEach(id=>{
+    const cl=W.clubs[id];
+    const row=E('div','pill',`${cl.name} · Rating ${cl.rating} (${NAT(cl.country)}) `);
+    const b=E('button','btn small','Terima & Pindah');
+    b.onclick=()=>{if(confirm(`Pindah melatih ${cl.name}? Kamu meninggalkan ${c.name}.`)){const r=acceptJob(W,id);toastW(r.msg);refresh();}};
+    row.appendChild(b);job.appendChild(row);
+  });
+  pane.appendChild(job);
 }
 
 // ---------- Fixtures (my league) ----------
