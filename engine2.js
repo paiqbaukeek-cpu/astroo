@@ -245,8 +245,12 @@ function endSeason(world){
     if(tour.clubWorldCup) entry.clubWorldCup={[tour.clubWorldCup.name]:tour.clubWorldCup.winner};
     if(tour.intl.length) entry.international=Object.fromEntries(tour.intl.map(t=>[t.name,t.winner]));
   }
+  // individual awards (computed before stats are reset below)
+  const awards = (typeof computeAwards==='function') ? computeAwards(world) : null;
+  if(awards) entry.awards=awards;
   world.history.push(entry);
   world.lastTournaments=tour;
+  world.lastAwards=awards;
   // prize for my club by league position
   const my=world.clubs[world.myClub];
   const myTable=tableOf(world,my.league);
