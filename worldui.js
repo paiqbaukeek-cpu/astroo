@@ -57,6 +57,7 @@ function tab(name){
 
 const ORD={GK:0,DEF:1,MID:2,FWD:3};
 function posTag(p){return `<span class="pos ${p}">${p}</span>`;}
+function clampInt(v,a,b){return Math.max(a,Math.min(b,v|0));}
 
 // ---------- Squad ----------
 function tSquad(){
@@ -261,9 +262,23 @@ function tManage(){
   if(!jo.offers.length){ job.appendChild(E('p','muted','Belum ada tawaran. Tingkatkan performa.')); }
   jo.offers.forEach(id=>{
     const cl=W.clubs[id];
-    const row=E('div','pill',`${cl.name} · Rating ${cl.rating} (${NAT(cl.country)}) `);
-    const b=E('button','btn small','Terima & Pindah');
-    b.onclick=()=>{if(confirm(`Pindah melatih ${cl.name}? Kamu meninggalkan ${c.name}.`)){const r=acceptJob(W,id);toastW(r.msg);refresh();}};
+    const target=(typeof suggestedTarget==='function')?suggestedTarget(W,id):4;
+    const row=E('div','pill',`${cl.name} · Rating ${cl.rating} (${NAT(cl.country)}) · target ≤${target} `);
+    const b=E('button','btn small','Negosiasi & Pindah');
+    b.onclick=()=>{
+      const durStr=prompt(`Negosiasi kontrak dengan ${cl.name}.\nDurasi kontrak (musim, 1-5):`,'3');
+      if(durStr===null) return;
+      const durasi=clampInt(parseInt(durStr,10)||3,1,5);
+      const tgtStr=prompt(`Target peringkat akhir musim (1 = juara). Saran klub: ≤${target}`,String(target));
+      if(tgtStr===null) return;
+      const targetVal=clampInt(parseInt(tgtStr,10)||target,1,20);
+      if(confirm(`Pindah melatih ${cl.name} selama ${durasi} musim, target ≤${targetVal}? Kamu meninggalkan ${c.name}.`)){
+        const r=acceptJob(W,id);
+        if(typeof setCoachContract==='function') setCoachContract(W,durasi,targetVal);
+        toastW(r.msg+` Kontrak ${durasi} musim, target ≤${targetVal}.`);
+        refresh();
+      }
+    };
     row.appendChild(b);job.appendChild(row);
   });
   pane.appendChild(job);
@@ -407,6 +422,21 @@ function tCoach(){
   });
   pane.appendChild(cl);
 
+  // Kontrak aktif
+  if(cc.contract){
+    const ct=E('div','panel','<h3>📝 Kontrak Aktif</h3>');
+    ct.appendChild(E('div','row',
+      `<span class="pill">Durasi: <b>${cc.contract.durasi} musim</b></span>`+
+      `<span class="pill">Sisa: <b>${cc.contract.sisa} musim</b></span>`+
+      `<span class="pill">Target: <b>≤ peringkat ${cc.contract.target}</b></span>`+
+      `<span class="pill">Mulai: <b>${cc.contract.mulai}</b></span>`));
+    if(cc.contractLog && cc.contractLog.length){
+      cc.contractLog.slice().reverse().forEach(l=>ct.appendChild(E('div','pill',
+        `${l.season}: peringkat ${l.pos} (target ≤${l.target}) · ${l.terpenuhi?'✅ terpenuhi':'❌ gagal'}`)));
+    }
+    pane.appendChild(ct);
+  }
+
   if(cc.titles.length){
     const tl=E('div','panel','<h3>🏆 Daftar Trofi</h3>');
     cc.titles.slice().reverse().forEach(t=>tl.appendChild(E('div','pill',`${t.season} · <b>${t.title}</b> (${t.club})`)));
@@ -431,7 +461,13 @@ function playWeek(){
     const myName=c.name;
     const sum=endSeason(W);
     if(typeof coachScanLastSeason==='function') coachScanLastSeason(W, myName);
-    toastW(`Musim selesai! Kamu finis peringkat ${sum.pos}. Cek tab Turnamen & Sejarah. Musim ${W.seasonLabel} dimulai.`);
+    let extra='';
+    if(typeof evaluateContract==='function'){
+      const ev=evaluateContract(W, sum.pos);
+      if(ev.ada){ extra = ev.terpenuhi? ` ✅ Target kontrak (≤${ev.target}) terpenuhi.` : ` ❌ Target kontrak (≤${ev.target}) gagal.`;
+        if(ev.habis) extra += ' Kontrak habis musim depan.'; }
+    }
+    toastW(`Musim selesai! Kamu finis peringkat ${sum.pos}.${extra} Cek tab Turnamen & Sejarah. Musim ${W.seasonLabel} dimulai.`);
     refresh();return;
   }
   const out=playWorldMatchday(W);
@@ -482,6 +518,7 @@ window.addEventListener('DOMContentLoaded',()=>{
     const target=Object.values(tmp.clubs).find(c=>c.league===wSelLeague&&c.name===wSelClub);
     tmp.myClub=target.id;W=tmp;
     if(typeof ensureCoach==='function'){W.coach=null;ensureCoach(W);}
+    if(typeof setCoachContract==='function'){const tgt=(typeof suggestedTarget==='function')?suggestedTarget(W,W.myClub):4;setCoachContract(W,3,tgt);}
     if(typeof ensureAcademy==='function')ensureAcademy(W);
     enter();
   };

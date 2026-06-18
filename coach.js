@@ -71,3 +71,45 @@ function coachWinPct(cc){
   const tot = cc.W+cc.D+cc.L;
   return tot? Math.round(cc.W/tot*100) : 0;
 }
+
+// ===== Negosiasi & kontrak pelatih =====
+// Tetapkan kontrak pelatih aktif (durasi dalam musim, target peringkat akhir).
+function setCoachContract(world, durasi, targetPeringkat){
+  const cc = ensureCoach(world);
+  if(!cc) return;
+  cc.contract = {
+    durasi: durasi,                 // total musim kontrak
+    sisa: durasi,                   // sisa musim
+    target: targetPeringkat,        // target maksimal peringkat liga (mis. <=4)
+    mulai: world.seasonLabel
+  };
+  const cur = world.clubs[world.myClub];
+  const entry = cc.clubs.find(c=>cur && c.club===cur.name && c.leftSeason===null);
+  if(entry){ entry.contractDurasi=durasi; entry.contractTarget=targetPeringkat; }
+}
+
+// Saran target peringkat berdasarkan rating klub relatif di liganya.
+function suggestedTarget(world, clubId){
+  const c = world.clubs[clubId];
+  const liga = (typeof tableOf==='function') ? tableOf(world, c.league) : [];
+  const n = liga.length || 18;
+  // klub kuat → target juara/4 besar; klub lemah → target aman dari degradasi
+  const rank = liga.findIndex(x=>x.id===clubId);
+  const base = rank>=0 ? rank+1 : Math.round(n/2);
+  if(c.rating>=84) return Math.max(1,Math.min(4,base));
+  if(c.rating>=78) return Math.min(6,Math.max(4,base));
+  if(c.rating>=72) return Math.min(10,Math.max(8,base));
+  return Math.min(n-2,Math.max(n-6,base));
+}
+
+// Evaluasi target kontrak tiap akhir musim. Mengembalikan {ada, terpenuhi, pos, target}.
+function evaluateContract(world, finalPos){
+  const cc = ensureCoach(world);
+  if(!cc || !cc.contract) return {ada:false};
+  const c = cc.contract;
+  const terpenuhi = finalPos <= c.target;
+  c.sisa = Math.max(0, (c.sisa||1) - 1);
+  if(!cc.contractLog) cc.contractLog = [];
+  cc.contractLog.push({ season: world.seasonLabel, pos: finalPos, target: c.target, terpenuhi });
+  return {ada:true, terpenuhi, pos:finalPos, target:c.target, sisa:c.sisa, habis:c.sisa<=0};
+}
