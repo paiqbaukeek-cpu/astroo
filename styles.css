@@ -80,3 +80,6 @@ tr.starter td:first-child{border-left:3px solid var(--accent)}
   background:var(--panel2);border:1px solid var(--line);font-size:13px;transition:.15s}
 .chip:hover{border-color:var(--muted)}
 .chip.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.bench{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.pcard.sel{outline:3px solid var(--gold);outline-offset:1px;transform:translateY(-3px)}
+.pcard{transition:transform .12s}

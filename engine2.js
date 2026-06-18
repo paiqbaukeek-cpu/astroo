@@ -60,6 +60,11 @@ function clubStrength(club){
     overall: xi.reduce((s,p)=>s+p.ovr,0)/Math.max(1,xi.length) };
 }
 function startingXI(club){
+  // Hormati lineup manual bila valid (11 pemain yang masih ada di skuad).
+  if(Array.isArray(club.lineup) && club.lineup.length===11){
+    const manual=club.lineup.map(id=>club.squad.find(p=>p.id===id)).filter(Boolean);
+    if(manual.length===11) return manual;
+  }
   // Hormati formasi pilihan klub; fallback ke 4-4-2 untuk save lama.
   const FALLBACK={GK:1,DEF:4,MID:4,FWD:2};
   const f=(typeof FORMATIONS!=='undefined' && FORMATIONS[club.formation]) || FALLBACK;
@@ -70,6 +75,24 @@ function startingXI(club){
   if(xi.length<11){const rest=club.squad.filter(p=>!xi.includes(p)).sort((a,b)=>b.ovr-a.ovr);
     for(const r of rest){if(xi.length>=11)break; xi.push(r);}}
   return xi;
+}
+// Susun ulang lineup otomatis (terbaik) sesuai formasi & simpan ke club.lineup.
+function autoLineup(club){
+  delete club.lineup;
+  club.lineup = startingXI(club).map(p=>p.id);
+}
+// Tukar dua pemain dalam lineup (atau masukkan cadangan menggantikan starter).
+function swapLineup(club, idA, idB){
+  if(!Array.isArray(club.lineup) || club.lineup.length!==11) club.lineup = startingXI(club).map(p=>p.id);
+  const ia=club.lineup.indexOf(idA), ib=club.lineup.indexOf(idB);
+  if(ia>=0 && ib>=0){ // keduanya starter: tukar urutan/posisi
+    [club.lineup[ia],club.lineup[ib]]=[club.lineup[ib],club.lineup[ia]];
+  } else if(ia>=0 && ib<0){ // B cadangan masuk gantikan A
+    club.lineup[ia]=idB;
+  } else if(ib>=0 && ia<0){ // A cadangan masuk gantikan B
+    club.lineup[ib]=idA;
+  }
+  return club.lineup;
 }
 
 function simMatch(home, away, neutral){
