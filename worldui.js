@@ -211,6 +211,12 @@ function tHistory(){
     if(h.contCups)Object.entries(h.contCups).forEach(([k,v])=>box.appendChild(E('div','pill',`${k}: <b>${v}</b>`)));
     if(h.clubWorldCup)Object.entries(h.clubWorldCup).forEach(([k,v])=>box.appendChild(E('div','pill',`${k}: <b>${v}</b>`)));
     if(h.international)Object.entries(h.international).forEach(([k,v])=>box.appendChild(E('div','pill',`🏆 ${k}: <b>${v}</b>`)));
+    if(h.awards){const aw=h.awards;
+      if(aw.ballon)box.appendChild(E('div','pill',`🏅 Ballon d'Orr: <b>${aw.ballon.name}</b> (${aw.ballon.club})`));
+      if(aw.goldenBoot)box.appendChild(E('div','pill',`👟 Sepatu Emass: <b>${aw.goldenBoot.name}</b> · ${aw.goldenBoot.goals} gol`));
+      if(aw.goldenGlove)box.appendChild(E('div','pill',`🧤 Sarung Emass: <b>${aw.goldenGlove.name}</b> · ${aw.goldenGlove.cs} CS`));
+      if(aw.youngPlayer)box.appendChild(E('div','pill',`🌟 Pemain Muda Terbaikk: <b>${aw.youngPlayer.name}</b> (${aw.youngPlayer.age})`));
+    }
     pane.appendChild(box);
   });
 }
