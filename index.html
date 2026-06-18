@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ultra Super Kick Off - Manajer Karir</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">⚽ ULTRA SUPER KICK OFF</div>
+    <div id="hud" class="hud"></div>
+  </header>
+
+  <main id="app">
+    <!-- New Game / Start screen -->
+    <section id="screen-start" class="screen active">
+      <div class="panel center">
+        <h1>Manajer Karir Sepak Bola</h1>
+        <p>Pilih klub yang ingin kamu kelola dan bawa menuju kejayaan.</p>
+        <label class="field">
+          <span>Nama Manajer</span>
+          <input id="manager-name" type="text" placeholder="Masukkan nama kamu" maxlength="20" />
+        </label>
+        <div id="club-picker" class="club-grid"></div>
+        <div class="row">
+          <button id="btn-start" class="btn primary">Mulai Karir</button>
+          <button id="btn-load" class="btn">Muat Simpanan</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main game -->
+    <section id="screen-game" class="screen">
+      <nav class="tabs">
+        <button class="tab active" data-tab="squad">Skuad</button>
+        <button class="tab" data-tab="tactics">Taktik</button>
+        <button class="tab" data-tab="training">Latihan</button>
+        <button class="tab" data-tab="transfer">Transfer</button>
+        <button class="tab" data-tab="fixtures">Jadwal</button>
+        <button class="tab" data-tab="table">Klasemen</button>
+      </nav>
+      <div class="tab-content">
+        <div id="tab-squad" class="tabpane active"></div>
+        <div id="tab-tactics" class="tabpane"></div>
+        <div id="tab-training" class="tabpane"></div>
+        <div id="tab-transfer" class="tabpane"></div>
+        <div id="tab-fixtures" class="tabpane"></div>
+        <div id="tab-table" class="tabpane"></div>
+      </div>
+      <footer class="actionbar">
+        <button id="btn-play" class="btn primary">Main Pertandingan Berikutnya</button>
+        <button id="btn-save" class="btn">Simpan</button>
+        <button id="btn-quit" class="btn danger">Keluar ke Menu</button>
+      </footer>
+    </section>
+  </main>
+
+  <!-- Match modal -->
+  <div id="match-modal" class="modal hidden">
+    <div class="modal-box">
+      <h2 id="match-title">Pertandingan</h2>
+      <div id="match-score" class="score">0 - 0</div>
+      <div id="match-log" class="match-log"></div>
+      <button id="match-close" class="btn primary hidden">Lanjut</button>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="engine.js"></script>
+  <script src="ui.js"></script>
+</body>
+</html>
