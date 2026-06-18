@@ -272,6 +272,8 @@ function endSeason(world){
   // finance snapshot for my club before applying, then apply for all clubs
   world.lastFinance = (typeof financeSummary==='function') ? financeSummary(world, my) : null;
   if(typeof applySeasonFinances==='function') applySeasonFinances(world);
+  // return loaned players to their parent clubs before aging/regen
+  if(typeof returnLoans==='function') returnLoans(world);
   // age & regen
   Object.values(world.clubs).forEach(c=>{
     c.P=c.W=c.D=c.L=c.GF=c.GA=c.Pts=0;
