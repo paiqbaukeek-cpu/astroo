@@ -183,6 +183,19 @@ function tFinance(){
 // ---------- Fixtures (my league) ----------
 function tFixtures(){
   const c=myC(),lid=c.league,pane=q('#tab-fixtures');pane.innerHTML='';
+  // Friendly match panel
+  const fr=E('div','panel',`<h3>🤝 Laga Persahabatan</h3>`);
+  const left=(typeof friendliesLeft==='function')?friendliesLeft(W):0;
+  fr.appendChild(E('p','muted',`Sisa friendly musim ini: <b>${left}</b> / ${MAX_FRIENDLIES}`));
+  const sel=E('select');
+  Object.values(W.clubs).filter(x=>x.id!==W.myClub).sort((a,b)=>a.name.localeCompare(b.name))
+    .forEach(x=>{const o=E('option',null,`${x.name} (${NAT(x.country)})`);o.value=x.id;sel.appendChild(o);});
+  fr.appendChild(sel);
+  const fb=E('button','btn primary small','Main Friendly');
+  fb.disabled=left<=0;
+  fb.onclick=()=>{const out=playFriendly(W,sel.value);if(out){matchModal(out);}};
+  fr.appendChild(fb);
+  pane.appendChild(fr);
   W.leagueFix[lid].forEach((round,i)=>{
     const played=i<W.leagueDay[lid];
     const box=E('div','panel',`<h3>Pekan ${i+1} ${i===W.leagueDay[lid]?'<span class="pill">Berikutnya</span>':''}</h3>`);
