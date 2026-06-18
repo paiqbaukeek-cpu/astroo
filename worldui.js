@@ -72,8 +72,12 @@ function tSquad(){
 }
 
 // ---------- Tactics ----------
+const FORMATION_KEYS=['4-4-2','4-3-3','3-5-2','5-3-2','4-2-3-1'];
+const MENTALITY_LABELS=['Bertahan','Seimbang','Menyerang'];
 function tTactics(){
   const c=myC(),pane=q('#tab-tactics');pane.innerHTML='';
+  if(!c.formation) c.formation='4-4-2';
+  if(c.mentality==null) c.mentality=1;
   const s=clubStrength(c);
   const box=E('div','panel','<h3>Kekuatan Tim</h3>');
   box.appendChild(E('div','row',
@@ -81,8 +85,30 @@ function tTactics(){
     `<span class="pill">Pertahanan: <b>${s.defense.toFixed(1)}</b></span>`+
     `<span class="pill">Kekuatan: <b>${s.overall.toFixed(1)}</b></span>`));
   pane.appendChild(box);
-  const xi=E('div','panel','<h3>Starting XI (otomatis: 4-4-2 terbaik)</h3>');
-  startingXI(c).sort((a,b)=>ORD[a.pos]-ORD[b.pos]).forEach(p=>xi.appendChild(E('div','pill',`${posTag(p.pos)} ${p.name} (${p.ovr})`)));
+
+  // Pemilih formasi
+  const fbox=E('div','panel','<h3>Formasi</h3>');
+  const frow=E('div','row');
+  FORMATION_KEYS.forEach(fk=>{
+    const chip=E('span','chip'+(c.formation===fk?' active':''),fk);
+    chip.onclick=()=>{c.formation=fk;tTactics();};
+    frow.appendChild(chip);
+  });
+  fbox.appendChild(frow);
+  // Pemilih mentalitas
+  const mrow=E('div','row');
+  MENTALITY_LABELS.forEach((ml,i)=>{
+    const chip=E('span','chip'+(c.mentality===i?' active':''),ml);
+    chip.onclick=()=>{c.mentality=i;tTactics();};
+    mrow.appendChild(chip);
+  });
+  fbox.appendChild(mrow);
+  pane.appendChild(fbox);
+
+  // Lapangan grafis
+  const xi=E('div','panel',`<h3>Susunan Pemain (${c.formation})</h3>`);
+  if(typeof renderPitch==='function') xi.appendChild(renderPitch(c, c.formation));
+  else startingXI(c).sort((a,b)=>ORD[a.pos]-ORD[b.pos]).forEach(p=>xi.appendChild(E('div','pill',`${posTag(p.pos)} ${p.name} (${p.ovr})`)));
   pane.appendChild(xi);
 }
 
