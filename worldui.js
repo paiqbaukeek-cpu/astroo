@@ -52,7 +52,7 @@ function tab(name){
   qa('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===name));
   qa('.tabpane').forEach(p=>p.classList.remove('active'));
   q('#tab-'+name).classList.add('active');
-  ({squad:tSquad,tactics:tTactics,training:tTraining,transfer:tTransfer,fixtures:tFixtures,table:tTable,tournaments:tTournaments,stats:tStats,history:tHistory})[name]();
+  ({squad:tSquad,tactics:tTactics,training:tTraining,transfer:tTransfer,finance:tFinance,fixtures:tFixtures,table:tTable,tournaments:tTournaments,stats:tStats,history:tHistory})[name]();
 }
 
 const ORD={GK:0,DEF:1,MID:2,FWD:3};
@@ -126,6 +126,58 @@ function tTransfer(){
   });
   st.appendChild(stb);sell.appendChild(st);
   grid.appendChild(buy);grid.appendChild(sell);pane.appendChild(grid);
+}
+
+// ---------- Keuangan ----------
+function tFinance(){
+  const c=myC(),pane=q('#tab-finance');pane.innerHTML='';
+  const fs=financeSummary(W,c);
+  const box=E('div','panel','<h3>Ringkasan Keuangan (proyeksi musim)</h3>');
+  box.appendChild(E('div','row',
+    `<span class="pill">Dana: <b>${M(c.budget)}</b></span>`+
+    `<span class="pill">Tiket: <b>${M(fs.tickets)}</b></span>`+
+    `<span class="pill">Sponsor: <b>${M(fs.sponsor)}</b></span>`+
+    `<span class="pill">Gaji: <b class="tag-loss">-${M(fs.wages)}</b></span>`+
+    `<span class="pill">Net: <b class="${fs.net>=0?'tag-win':'tag-loss'}">${fs.net>=0?'+':''}${M(fs.net)}</b></span>`));
+  pane.appendChild(box);
+
+  // Stadium
+  const st=E('div','panel','<h3>🏟️ Stadion</h3>');
+  st.appendChild(E('div','row',
+    `<span class="pill">${c.stadium.name}</span>`+
+    `<span class="pill">Kapasitas: <b>${c.stadium.capacity.toLocaleString()}</b></span>`+
+    `<span class="pill">Level: <b>${c.stadium.level}</b></span>`));
+  const ec=expansionCost(c);
+  const eb=E('button','btn primary',`Perluas (+8.000 kursi) · ${M(ec)}`);
+  eb.disabled=c.budget<ec;
+  eb.onclick=()=>{const r=expandStadium(c);toastW(r.msg);tFinance();hud();};
+  st.appendChild(eb);pane.appendChild(st);
+
+  // Sponsor
+  const sp=E('div','panel','<h3>🤝 Sponsor</h3>');
+  sp.appendChild(E('p','muted', c.sponsor?`Sponsor aktif: <b>${c.sponsor.name}</b> · base ${M(c.sponsor.base)} + bonus ${M(c.sponsor.bonus)} jika ${c.sponsor.label}.`:'Belum ada sponsor. Pilih satu:'));
+  sponsorOffers(c).forEach(o=>{
+    const row=E('div','pill',`${o.name}: base <b>${M(o.base)}</b> + bonus <b>${M(o.bonus)}</b> (${o.label}) `);
+    const b=E('button','btn small',c.sponsor&&c.sponsor.id===o.id?'Aktif':'Pilih');
+    b.disabled=c.sponsor&&c.sponsor.id===o.id;
+    b.onclick=()=>{signSponsor(c,o.id);toastW('Sponsor '+o.name+' ditandatangani.');tFinance();};
+    row.appendChild(b);sp.appendChild(row);
+  });
+  pane.appendChild(sp);
+
+  // Contracts
+  const cn=E('div','panel','<h3>📝 Kontrak & Gaji</h3>');
+  const t=E('table');
+  t.innerHTML='<thead><tr><th>Nama</th><th>Pos</th><th>OVR</th><th>Gaji/musim</th><th>Sisa</th><th></th></tr></thead>';
+  const tb=E('tbody');
+  c.squad.slice().sort((a,b)=>b.ovr-a.ovr).forEach(p=>{
+    const exp=(p.contract||0)<=1;
+    const tr=E('tr',exp?'starter':'',`<td>${p.name}</td><td>${posTag(p.pos)}</td><td>${p.ovr}</td><td>${M(p.wage)}</td><td>${p.contract||0} msm</td>`);
+    const cell=E('td');const b=E('button','btn small','Perpanjang +2');
+    b.onclick=()=>{const r=renewContract(c,p,2);toastW(r.msg);tFinance();hud();};
+    cell.appendChild(b);tr.appendChild(cell);tb.appendChild(tr);
+  });
+  t.appendChild(tb);cn.appendChild(t);pane.appendChild(cn);
 }
 
 // ---------- Fixtures (my league) ----------
