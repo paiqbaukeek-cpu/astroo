@@ -17,15 +17,23 @@
     <section id="screen-start" class="screen active">
       <div class="panel center">
         <h1>Manajer Karir Sepak Bola</h1>
-        <p>Pilih klub yang ingin kamu kelola dan bawa menuju kejayaan.</p>
+        <p>Pilih liga dan klub yang ingin kamu kelola, lalu kuasai dunia.</p>
         <label class="field">
           <span>Nama Manajer</span>
-          <input id="manager-name" type="text" placeholder="Masukkan nama kamu" maxlength="20" />
+          <input id="w-manager" type="text" placeholder="Masukkan nama kamu" maxlength="20" />
         </label>
-        <div id="club-picker" class="club-grid"></div>
+        <label class="field">
+          <span>Label Musim</span>
+          <input id="w-season" type="text" value="25/26" maxlength="5" />
+        </label>
+        <label class="field">
+          <span>Liga</span>
+          <select id="w-league"></select>
+        </label>
+        <div id="w-club-picker" class="club-grid"></div>
         <div class="row">
-          <button id="btn-start" class="btn primary">Mulai Karir</button>
-          <button id="btn-load" class="btn">Muat Simpanan</button>
+          <button id="w-start" class="btn primary">Mulai Karir</button>
+          <button id="w-load" class="btn">Muat Simpanan</button>
         </div>
       </div>
     </section>
@@ -39,6 +47,8 @@
         <button class="tab" data-tab="transfer">Transfer</button>
         <button class="tab" data-tab="fixtures">Jadwal</button>
         <button class="tab" data-tab="table">Klasemen</button>
+        <button class="tab" data-tab="tournaments">Turnamen</button>
+        <button class="tab" data-tab="history">Sejarah</button>
       </nav>
       <div class="tab-content">
         <div id="tab-squad" class="tabpane active"></div>
@@ -47,11 +57,13 @@
         <div id="tab-transfer" class="tabpane"></div>
         <div id="tab-fixtures" class="tabpane"></div>
         <div id="tab-table" class="tabpane"></div>
+        <div id="tab-tournaments" class="tabpane"></div>
+        <div id="tab-history" class="tabpane"></div>
       </div>
       <footer class="actionbar">
-        <button id="btn-play" class="btn primary">Main Pertandingan Berikutnya</button>
-        <button id="btn-save" class="btn">Simpan</button>
-        <button id="btn-quit" class="btn danger">Keluar ke Menu</button>
+        <button id="w-play" class="btn primary">Main Pekan Berikutnya</button>
+        <button id="w-save" class="btn">Simpan</button>
+        <button id="w-quit" class="btn danger">Keluar ke Menu</button>
       </footer>
     </section>
   </main>
@@ -68,6 +80,9 @@
 
   <script src="data.js"></script>
   <script src="engine.js"></script>
-  <script src="ui.js"></script>
+  <script src="world.js"></script>
+  <script src="engine2.js"></script>
+  <script src="tournaments.js"></script>
+  <script src="worldui.js"></script>
 </body>
 </html>
