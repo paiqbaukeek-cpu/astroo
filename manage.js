@@ -84,7 +84,14 @@ function jobOffers(world){
 }
 function acceptJob(world, clubId){
   if(!world.clubs[clubId]) return {ok:false,msg:'Klub tidak ada.'};
+  // Tutup entri klub lama di histori karir pelatih sebelum pindah.
+  if(typeof ensureCoach==='function'){
+    const cc=ensureCoach(world);
+    cc.clubs.forEach(c=>{ if(c.leftSeason===null) c.leftSeason=world.seasonLabel; });
+  }
   world.myClub=clubId;
+  // Buka entri klub baru.
+  if(typeof ensureCoach==='function') ensureCoach(world);
   return {ok:true,msg:`Kamu kini melatih ${world.clubs[clubId].name}.`};
 }
 function resignToClub(world, clubId){ return acceptJob(world, clubId); }
