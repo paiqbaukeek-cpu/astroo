@@ -10,7 +10,21 @@ Game **manajer karir sepak bola** berbasis browser, terinspirasi Super Kick Off 
 
 > Untuk dimainkan online via GitLab Pages, aktifkan Pages dengan menyajikan folder root.
 
-## Fitur
+## Fitur (World Edition)
+
+- **Pilih liga & klub** dari 6 liga negara (Inggris, Spanyol, Italia, Jerman, Prancis, Indonesia), 110+ klub bernama plesetan.
+- **Ribuan pemain** ter-generate dengan **kebangsaan** dan nama sesuai negara.
+- **Semua turnamen seperti dunia nyata** tiap musim:
+  - Liga domestik tiap negara (juara per liga)
+  - Piala domestik (Piala FA, Copa del Rey, Coppa Italia, DFB Pokal, Coupe de France, Piala Indonesia)
+  - Piala Super domestik
+  - Liga Champions Eropa, Liga Eropa, Konferensi Eropa, Liga Champions Asia
+  - Piala Dunia Antarklub
+  - Antarnegara berkala: Piala Dunia (tiap 4 musim), Piala Eropa, Copa America, Piala Asia
+- **Sejarah / Palmares** mencatat semua juara tiap musim.
+- **Musim berganti otomatis** (label 25/26 -> 26/27), pemain menua, regenerasi pemain muda, hadiah peringkat.
+
+### Fitur dasar
 
 - **Pilih klub** dari 8 klub dengan rating & dana berbeda.
 - **Skuad lengkap** tiap pemain punya OVR, atribut (pace, shoot, pass, defend, stamina), umur, morale, form, nilai pasar, dan statistik gol/penampilan.
