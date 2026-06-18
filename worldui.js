@@ -92,7 +92,7 @@ function tTactics(){
   const frow=E('div','row');
   FORMATION_KEYS.forEach(fk=>{
     const chip=E('span','chip'+(c.formation===fk?' active':''),fk);
-    chip.onclick=()=>{c.formation=fk;tTactics();};
+    chip.onclick=()=>{c.formation=fk;if(typeof autoLineup==='function')autoLineup(c);tTactics();};
     frow.appendChild(chip);
   });
   fbox.appendChild(frow);
@@ -106,11 +106,23 @@ function tTactics(){
   fbox.appendChild(mrow);
   pane.appendChild(fbox);
 
-  // Lapangan grafis
+  // Lapangan grafis interaktif
   const xi=E('div','panel',`<h3>Susunan Pemain (${c.formation})</h3>`);
-  if(typeof renderPitch==='function') xi.appendChild(renderPitch(c, c.formation));
+  xi.appendChild(E('p','muted','Seret kartu (atau klik dua pemain) untuk menukar posisi. Klik pemain cadangan lalu starter untuk memasukkannya.'));
+  const onSwap=(a,b)=>{ if(typeof swapLineup==='function'){swapLineup(c,a,b);tTactics();} };
+  if(typeof renderPitch==='function') xi.appendChild(renderPitch(c, c.formation, onSwap));
   else startingXI(c).sort((a,b)=>ORD[a.pos]-ORD[b.pos]).forEach(p=>xi.appendChild(E('div','pill',`${posTag(p.pos)} ${p.name} (${p.ovr})`)));
+  const reset=E('button','btn small','↻ Susun Otomatis');
+  reset.onclick=()=>{if(typeof autoLineup==='function'){autoLineup(c);tTactics();}};
+  xi.appendChild(reset);
   pane.appendChild(xi);
+
+  // Cadangan
+  if(typeof renderBench==='function'){
+    const bn=E('div','panel','<h3>Cadangan</h3>');
+    bn.appendChild(renderBench(c, onSwap));
+    pane.appendChild(bn);
+  }
 }
 
 // ---------- Training ----------
