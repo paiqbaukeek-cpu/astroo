@@ -54,7 +54,9 @@ function retirePlayer(world, playerId){
   if(idx<0) return {ok:false,msg:'Pemain tidak ada.'};
   const p=me.squad[idx];
   me.squad.splice(idx,1);
-  return {ok:true,msg:`${p.name} resmi pensiun. Terima kasih atas pengabdiannya.`};
+  // Catat sebagai legenda klub jika modul akademi tersedia.
+  if(typeof recordLegend==='function') recordLegend(world, me, p);
+  return {ok:true,msg:`${p.name} resmi pensiun & menjadi legenda ${me.name}. Terima kasih atas pengabdiannya.`};
 }
 // Auto-retire very old players across the world (called at season end).
 function autoRetire(world){
