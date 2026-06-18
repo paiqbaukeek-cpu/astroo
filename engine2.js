@@ -200,16 +200,23 @@ function playWorldCup(world){
 function endSeason(world){
   const champs={};
   LEAGUES.forEach(L=>{champs[L.id]=tableOf(world,L.id)[0];});
-  const contWinner = world.cont? world.clubs[world.cont.winner] : null;
-  const isWcSeason = world.seasonNum%4===0;
-  let wc=null; if(isWcSeason) wc=playWorldCup(world);
-  // record history
-  world.history.push({
+  // Resolve every tournament for this season (domestic cups, super cups,
+  // UCL/UEL/UECL/ACL, club world cup, and rotating international tournaments).
+  const tour = (typeof resolveAllTournaments==='function') ? resolveAllTournaments(world) : null;
+  // record history / palmares
+  const entry={
     season:world.seasonLabel,
-    leagues:Object.fromEntries(LEAGUES.map(L=>[L.name, champs[L.id]?champs[L.id].name:'-'])),
-    continental: contWinner?contWinner.name:'-',
-    worldCup: wc?wc.winner:null
-  });
+    leagues:Object.fromEntries(LEAGUES.map(L=>[L.name, champs[L.id]?champs[L.id].name:'-']))
+  };
+  if(tour){
+    entry.domesticCups=Object.fromEntries(Object.values(tour.domesticCups).map(c=>[c.name,c.winner]));
+    entry.contCups=Object.fromEntries(Object.values(tour.contCups).map(c=>[c.name,c.winner]));
+    entry.superCups=Object.fromEntries(Object.values(tour.superCups).map(c=>[c.name,c.winner]));
+    if(tour.clubWorldCup) entry.clubWorldCup={[tour.clubWorldCup.name]:tour.clubWorldCup.winner};
+    if(tour.intl.length) entry.international=Object.fromEntries(tour.intl.map(t=>[t.name,t.winner]));
+  }
+  world.history.push(entry);
+  world.lastTournaments=tour;
   // prize for my club by league position
   const my=world.clubs[world.myClub];
   const myTable=tableOf(world,my.league);
