@@ -265,10 +265,13 @@ function endSeason(world){
   const myTable=tableOf(world,my.league);
   const pos=myTable.findIndex(c=>c.id===world.myClub)+1;
   my.budget=+(my.budget+Math.max(2,(myTable.length-pos+1)*1.5)).toFixed(1);
+  // finance snapshot for my club before applying, then apply for all clubs
+  world.lastFinance = (typeof financeSummary==='function') ? financeSummary(world, my) : null;
+  if(typeof applySeasonFinances==='function') applySeasonFinances(world);
   // age & regen
   Object.values(world.clubs).forEach(c=>{
     c.P=c.W=c.D=c.L=c.GF=c.GA=c.Pts=0;
-    c.squad.forEach(p=>{p.age++;p.goals=0;p.assists=0;p.cleanSheets=0;p.apps=0;p.rating=0;p.ratingSum=0;if(p.age>30)p.ovr=clamp2(p.ovr-irnd2(0,2),45,99);p.value=valueOf(p);});
+    c.squad.forEach(p=>{p.age++;p.goals=0;p.assists=0;p.cleanSheets=0;p.apps=0;p.rating=0;p.ratingSum=0;if(p.age>30)p.ovr=clamp2(p.ovr-irnd2(0,2),45,99);p.value=valueOf(p);p.wage=wageOf(p);});
     // retire very old, add youth
     c.squad=c.squad.filter(p=>p.age<37);
     while(c.squad.length<22){c.squad.push(genPlayer(pick2(POS),c.rating-irnd2(4,12),c.country));}
