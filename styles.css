@@ -1,0 +1,82 @@
+:root{
+  --bg:#0d1117; --panel:#161b22; --panel2:#1f2630; --line:#30363d;
+  --txt:#e6edf3; --muted:#8b949e; --accent:#2ea043; --accent2:#1f6feb;
+  --danger:#da3633; --warn:#d29922; --gold:#e3b341;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--txt)}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.brand{font-weight:800;letter-spacing:.5px;color:var(--gold)}
+.hud{display:flex;gap:14px;font-size:13px;color:var(--muted);flex-wrap:wrap}
+.hud b{color:var(--txt)}
+.screen{display:none;padding:16px;max-width:1000px;margin:0 auto}
+.screen.active{display:block}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px;margin-bottom:14px}
+.panel.center{max-width:640px;margin:30px auto;text-align:center}
+h1{margin:0 0 6px}
+.field{display:flex;flex-direction:column;gap:4px;text-align:left;margin:14px 0}
+.field span{font-size:13px;color:var(--muted)}
+input,select{background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:9px 11px;font-size:14px}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+.btn{background:var(--panel2);border:1px solid var(--line);color:var(--txt);padding:9px 16px;border-radius:8px;cursor:pointer;font-size:14px;transition:.15s}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.btn.primary:hover{filter:brightness(1.1)}
+.btn.danger{background:transparent;border-color:var(--danger);color:var(--danger)}
+.btn.small{padding:5px 10px;font-size:12px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.club-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:14px 0}
+.club-card{background:var(--panel2);border:2px solid var(--line);border-radius:10px;padding:12px;cursor:pointer;text-align:center;transition:.15s}
+.club-card:hover{border-color:var(--muted)}
+.club-card.selected{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
+.club-card .nm{font-weight:700}
+.club-card .meta{font-size:12px;color:var(--muted);margin-top:4px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding:0 0 8px}
+.tab{background:transparent;border:none;color:var(--muted);padding:8px 14px;cursor:pointer;border-radius:8px;font-size:14px}
+.tab.active{background:var(--panel2);color:var(--txt);font-weight:600}
+.tabpane{display:none;padding-top:14px}
+.tabpane.active{display:block}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase}
+tr.me{background:rgba(227,179,65,.08)}
+tr.starter td:first-child{border-left:3px solid var(--accent)}
+.pos{display:inline-block;min-width:32px;text-align:center;border-radius:4px;padding:2px 4px;font-size:11px;font-weight:700}
+.pos.GK{background:#8957e5}.pos.DEF{background:#1f6feb}.pos.MID{background:#2ea043}.pos.FWD{background:#da3633}
+.bar{height:6px;background:var(--panel2);border-radius:4px;overflow:hidden;min-width:60px}
+.bar > i{display:block;height:100%;background:var(--accent)}
+.actionbar{position:sticky;bottom:0;display:flex;gap:10px;justify-content:center;padding:12px;background:var(--panel);border-top:1px solid var(--line);margin-top:18px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;z-index:20}
+.modal.hidden{display:none}
+.modal-box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px;width:min(520px,92vw);text-align:center}
+.score{font-size:42px;font-weight:800;margin:10px 0;color:var(--gold)}
+.match-log{text-align:left;height:220px;overflow:auto;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px;font-size:13px;line-height:1.6}
+.match-log .goal{color:var(--accent);font-weight:600}
+.match-log .me{color:var(--gold)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:680px){.grid2{grid-template-columns:1fr}}
+.muted{color:var(--muted)}
+.pill{display:inline-block;background:var(--panel2);border:1px solid var(--line);border-radius:20px;padding:3px 10px;font-size:12px;margin:2px}
+.tag-win{color:var(--accent)}.tag-draw{color:var(--warn)}.tag-loss{color:var(--danger)}
+
+/* ===== Lapangan & kartu pemain (nuansa Super Kick Off mobile) ===== */
+.pitch{background:linear-gradient(180deg,#1f7a3d 0%,#1a6b35 100%);
+  border:2px solid #2ea043;border-radius:14px;padding:16px 8px;margin:10px 0;
+  display:flex;flex-direction:column;gap:14px;
+  background-image:repeating-linear-gradient(180deg,transparent,transparent 38px,rgba(255,255,255,.05) 38px,rgba(255,255,255,.05) 76px);}
+.pitch-row{display:flex;justify-content:space-around;align-items:center;gap:6px}
+.pcard{position:relative;width:62px;min-height:78px;border-radius:10px;padding:6px 4px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  color:#0d1117;font-weight:700;box-shadow:0 3px 8px rgba(0,0,0,.4);border:2px solid rgba(255,255,255,.3)}
+.pcard-ovr{font-size:20px;line-height:1}
+.pcard-pos{font-size:10px;font-weight:800;opacity:.8}
+.pcard-name{font-size:10px;font-weight:600;text-align:center;max-width:58px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pcard.elite{background:linear-gradient(160deg,#e3b341,#caa12f)}
+.pcard.great{background:linear-gradient(160deg,#3fd06a,#2ea043)}
+.pcard.good{background:linear-gradient(160deg,#5aa9f5,#1f6feb);color:#fff}
+.pcard.avg{background:linear-gradient(160deg,#f0d264,#d29922)}
+.pcard.low{background:linear-gradient(160deg,#e8836a,#da3633);color:#fff}
+.chip{display:inline-block;padding:6px 14px;margin:3px;border-radius:20px;cursor:pointer;
+  background:var(--panel2);border:1px solid var(--line);font-size:13px;transition:.15s}
+.chip:hover{border-color:var(--muted)}
+.chip.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
